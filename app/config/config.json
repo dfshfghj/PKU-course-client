@@ -1,0 +1,18 @@
+{
+    "Math": {
+        "AngleUnit": "Radian",
+        "DisplayMode": "Norm 1",
+        "UseEngineerSymbol": false
+    },
+    "MainWindow": {
+        "DpiScale": "Auto",
+        "EnableAcrylicBackground": true,
+        "Language": "zh_CN",
+        "MinimizeToTray": true,
+        "PlayBarColor": "#ff225c7f"
+    },
+    "QFluentWidgets": {
+        "ThemeColor": "#ff94070c",
+        "ThemeMode": "Light"
+    }
+}

@@ -1,0 +1,16 @@
+.vscode/
+
+data/*
+
+__pycache__/
+*.pro
+*.spec
+*.ui
+
+/target/
+/build/
+dist/
+node_modules/
+
+test.py
+test2.py
