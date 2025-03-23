@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont
-from qfluentwidgets import CardWidget, BodyLabel, IconWidget, SubtitleLabel, TextBrowser, FluentIcon, CaptionLabel
+from PyQt6.QtGui import QFont, QColor
+from qfluentwidgets import CardWidget, BodyLabel, IconWidget, SubtitleLabel, TextBrowser, FluentIcon, CaptionLabel, HorizontalSeparator, SimpleCardWidget, isDarkTheme
 from ..components.AutoAdjustTextBrowser import AutoAdjustTextBrowser
 
 class AnnouncementCard(CardWidget):
@@ -67,17 +67,29 @@ class DocumentCard(CardWidget):
         self.verticalLayout.setContentsMargins(20, 20, 20, 20)
         self.verticalLayout.addLayout(self.horizontalLayout)
         if detail:
+            '''
             self.line = QtWidgets.QFrame(self)
             self.line.setObjectName("line")
             self.line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
             self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
             self.verticalLayout.addWidget(self.line)
+            '''
+            self.horizontalSeparator = HorizontalSeparator(self)
+            self.horizontalSeparator.setObjectName('horizontalSeparator')
+            self.verticalLayout.addWidget(self.horizontalSeparator)
             self.details = CaptionLabel(self)
             #self.details.setTextFormat(Qt.TextFormat.MarkdownText)
             self.details.setTextFormat(Qt.TextFormat.RichText)
             self.details.setObjectName("details")
             self.details.setWordWrap(True)
             self.verticalLayout.addWidget(self.details)
+
+class LoginPanelCard(SimpleCardWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def _normalBackgroundColor(self):
+        return QColor(127, 127, 127, 170 if isDarkTheme else 255) 
             
 
 

@@ -1,16 +1,21 @@
 .vscode/
 
 data/*
+download*/
 
 __pycache__/
 *.pro
 *.spec
 *.ui
+*.qrc
 
 /target/
 /build/
 dist/
+*.build/
+*.dist/
+*.onefile-build/
+*.exe
 node_modules/
 
-test.py
-test2.py
+test*.*

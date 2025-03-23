@@ -74,39 +74,6 @@ class SettingInterface(ScrollArea):
             parent=self.personalGroup
         )
 
-        # math
-        self.mathGroup = SettingCardGroup(
-            self.tr('Math'), self.scrollWidget)
-        self.numberFormatCard = ComboBoxSettingCard(
-            cfg.numberFormat,
-            FIF.EDIT,
-            self.tr('Number Format'),
-            self.tr('Set the number format'),
-            texts=[
-                self.tr('Fix'), self.tr('Sci'),
-                self.tr('Norm 1'), self.tr('Norm 2'),
-            ],
-            parent=self.mathGroup
-        )
-        self.angleUnitCard = ComboBoxSettingCard(
-            cfg.angleUnit,
-            FIF.UNIT,
-            self.tr('Angle Unit'),
-            self.tr('Set the angle unit'),
-            texts=[
-                self.tr('Degree'), self.tr('Radian'),
-                self.tr('Gradian'),
-            ],
-            parent=self.mathGroup
-        )
-        self.engineerSymbolCard = SwitchSettingCard(
-            FIF.BASKETBALL,
-            self.tr('Use engineering symbol'),
-            self.tr('Use engineering symbol in scientific notation'),
-            configItem=cfg.useEngineerSymbol,
-            parent=self.mathGroup
-        )
-
         self.__initWidget()
 
     def __initWidget(self):
@@ -127,26 +94,17 @@ class SettingInterface(ScrollArea):
     def __initLayout(self):
         self.settingLabel.move(60, 63)
 
-        # add cards to group
-        # self.musicInThisPCGroup.addSettingCard(self.musicFolderCard)
-        # self.musicInThisPCGroup.addSettingCard(self.downloadFolderCard)
-
         self.personalGroup.addSettingCard(self.enableAcrylicCard)
         self.personalGroup.addSettingCard(self.themeCard)
         self.personalGroup.addSettingCard(self.themeColorCard)
         self.personalGroup.addSettingCard(self.zoomCard)
         self.personalGroup.addSettingCard(self.languageCard)
 
-        self.mathGroup.addSettingCard(self.numberFormatCard)
-        self.mathGroup.addSettingCard(self.angleUnitCard)
-        self.mathGroup.addSettingCard(self.engineerSymbolCard)
-
         # add setting card group to layout
         self.expandLayout.setSpacing(28)
         self.expandLayout.setContentsMargins(60, 10, 60, 0)
         # self.expandLayout.addWidget(self.musicInThisPCGroup)
         self.expandLayout.addWidget(self.personalGroup)
-        self.expandLayout.addWidget(self.mathGroup)
 
     def __setQss(self):
         """ set style sheet """

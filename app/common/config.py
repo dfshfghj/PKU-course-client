@@ -42,14 +42,6 @@ class Config(QConfig):
     language = OptionsConfigItem(
         "MainWindow", "Language", Language.AUTO, OptionsValidator(Language), LanguageSerializer(), restart=True)
 
-    # math
-    numberFormat = OptionsConfigItem(
-        "Math", "DisplayMode", "Fix", OptionsValidator(["Fix", "Sci", "Norm 1", "Norm 2"]))
-    angleUnit = OptionsConfigItem(
-        "Math", "AngleUnit", "Degree", OptionsValidator(["Degree", "Radian", "Gradian"]))
-    useEngineerSymbol = ConfigItem(
-        "Math", "UseEngineerSymbol", False, BoolValidator())
-
 
 
 cfg = Config()

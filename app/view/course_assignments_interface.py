@@ -1,20 +1,24 @@
-from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtWidgets import QWidget, QApplication, QStackedWidget, QStackedLayout
+from PyQt6.QtWidgets import QWidget
 from PyQt6.QtCore import Qt
 from .Ui_CourseAnnouncementInterface import Ui_CourseAnnouncementInterface
-from qfluentwidgets import PushButton, TransparentPushButton, TransparentToolButton, FluentIcon, isDarkTheme
+from .course_content_interface import CourseContentInterface
+from qfluentwidgets import FluentIcon, StateToolTip, setCustomStyleSheet
 from ..components.card import DocumentCard
-from ..common.get_information import getCourseDocuments
+from ..common.get_information import getCourseDocuments, uri2id
+from ..common.course_requests import Client, Web, detect_type
+from ..components.FileDownloader import FileDownloader
 import json
 from datetime import datetime, timedelta
 
 class CourseAssignmentsInterface(Ui_CourseAnnouncementInterface, QWidget):
-    def __init__(self, name: tuple, client, parent=None):
+    def __init__(self, name: str, id_dict: dict, client: Client, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.client = client
-        self.url, self.name = name
+        self.name = name
+        self.course_id, self.content_id = id_dict['course_id'], id_dict['content_id']
         self.current_time = datetime.now()
+        self.stateTooltip = None
 
         self.init_ui()
         self.load_data()
@@ -31,13 +35,18 @@ class CourseAssignmentsInterface(Ui_CourseAnnouncementInterface, QWidget):
     def load_data(self):
         with open('data/courseAssignments.json', 'r', encoding='utf-8') as file:
             prev_assignments = json.load(file)
-
-        if not self.url in prev_assignments or self.current_time - datetime.strptime(prev_assignments[self.url]['time'], "%Y-%m-%d %H:%M:%S") >= timedelta(seconds=1):
-            assignments_html = self.client.page_by_uri(self.url)
-            self.content = getCourseDocuments(assignments_html)
-            self.update_assignments_json(self.url, self.current_time, self.content)
+        if not self.course_id in prev_assignments or self.current_time - datetime.strptime(prev_assignments[self.course_id]['time'], "%Y-%m-%d %H:%M:%S") >= timedelta(seconds=1):
+            try:
+                assignments_html = self.client.blackboard_course_content_page(self.course_id, self.content_id)
+                self.content = getCourseDocuments(assignments_html)
+                self.update_assignments_json(self.course_id, self.current_time, self.content)
+            except:
+                if self.course_id in prev_assignments:
+                    self.content = prev_assignments[self.course_id]['content']
+                else:
+                    self.content = []
         else:
-            self.content = prev_assignments[self.url]['content']
+            self.content = prev_assignments[self.course_id]['content']
 
     def display_data(self):
         self.assignmentsCards = []
@@ -52,7 +61,7 @@ class CourseAssignmentsInterface(Ui_CourseAnnouncementInterface, QWidget):
                 card = DocumentCard(icon, False, self)
             
             card.href = assignment['href']
-            card.clicked.connect(lambda: print(f'clicked: {self.assignmentsCards[-1].href}'))
+            card.clicked.connect(lambda uri=card.href: self.get_to_new_page(uri))
             card.title.setText(assignment['name'])
             self.assignmentsCards.append(card)
             self.container.addWidget(card)
@@ -65,6 +74,38 @@ class CourseAssignmentsInterface(Ui_CourseAnnouncementInterface, QWidget):
                         }
             file.seek(0)
             json.dump(data, file)
+            file.truncate()
     
     def get_linked_files(self, link):
-        pass
+        qss = "StateToolTip {background-color: #AAAAAAAA}"
+        if self.stateTooltip is None:
+            self.stateTooltip = StateToolTip('下载文件', '下载中...', self)
+            setCustomStyleSheet(self.stateTooltip, qss, qss)
+            self.stateTooltip.move(self.stateTooltip.getSuitablePos())
+            self.stateTooltip.show()
+        downloader = FileDownloader(self.client, link, dir='download')
+        downloader.finished.connect(lambda: self.finishDownload(downloader))
+        downloader.start()
+
+    def finishDownload(self, downloader: FileDownloader):
+        downloader.quit()
+        downloader.wait()
+        if self.stateTooltip:
+            self.stateTooltip.setContent('下载完成！')
+            self.stateTooltip.setState(True)
+            self.stateTooltip = None
+
+    def get_to_new_page(self, uri):
+        if detect_type(uri) == Web.COURSE_CONTENT_PAGE:
+            id_dict = uri2id(uri)
+            if uri in self.parent().parent().page:
+                self.parent().parent().stackedWidget.setCurrentWidget(self.parent().parent().page[uri])
+            else:
+                newCourseContentPage = CourseContentInterface(self.name, id_dict, self.client, self.parent())
+                self.parent().parent().stackedWidget.addWidget(newCourseContentPage)
+                self.parent().parent().stackedWidget.setCurrentWidget(newCourseContentPage)
+                self.parent().parent().page[uri] = newCourseContentPage
+        elif detect_type(uri) == None:
+            self.get_linked_files(uri)
+        else:
+            pass

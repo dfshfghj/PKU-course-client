@@ -1,9 +1,4 @@
 {
-    "Math": {
-        "AngleUnit": "Radian",
-        "DisplayMode": "Norm 1",
-        "UseEngineerSymbol": false
-    },
     "MainWindow": {
         "DpiScale": "Auto",
         "EnableAcrylicBackground": true,
@@ -13,6 +8,6 @@
     },
     "QFluentWidgets": {
         "ThemeColor": "#ff94070c",
-        "ThemeMode": "Light"
+        "ThemeMode": "Auto"
     }
 }

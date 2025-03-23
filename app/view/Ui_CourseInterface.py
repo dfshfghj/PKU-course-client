@@ -23,6 +23,7 @@ class Ui_CourseInterface(object):
         self.frame.setSizePolicy(sizePolicy)
         self.frame.setMinimumSize(QtCore.QSize(0, 50))
         self.frame.setMaximumSize(QtCore.QSize(16777215, 50))
+        self.frame.setStyleSheet("background-color: transparent;")
         self.frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame.setObjectName("frame")
@@ -43,7 +44,9 @@ class Ui_CourseInterface(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.menuWrap = QtWidgets.QFrame(parent=CourseInterface)
-        self.menuWrap.setMinimumSize(QtCore.QSize(50, 0))
+        self.menuWrap.setMinimumSize(QtCore.QSize(100, 0))
+        self.menuWrap.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.menuWrap.setStyleSheet("background-color: transparent;")
         self.menuWrap.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.menuWrap.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.menuWrap.setObjectName("menuWrap")
@@ -115,7 +118,7 @@ class Ui_CourseInterface(object):
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.verticalLayout_2.addItem(spacerItem1)
         self.horizontalLayout.addWidget(self.menuWrap)
-        self.stackedWidget = QtWidgets.QStackedWidget(parent=CourseInterface)
+        self.stackedWidget = PopUpAniStackedWidget(parent=CourseInterface)
         self.stackedWidget.setObjectName("stackedWidget")
         self.page = QtWidgets.QWidget()
         self.page.setObjectName("page")
@@ -151,4 +154,4 @@ class Ui_CourseInterface(object):
         self.myGroupButton.setText(_translate("CourseInterface", "testGroup"))
 from ..components.button import NavigationButton
 from ..components.label import CourseMenuLabel
-from qfluentwidgets import TransparentToolButton
+from qfluentwidgets import PopUpAniStackedWidget, TransparentToolButton

@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap, QImage, QPainter, QIcon
 
-from qfluentwidgets import TransparentPushButton, TransparentToolButton
+from qfluentwidgets import TransparentPushButton, TransparentToolButton, setCustomStyleSheet
 from ..common.icons import LocalIcon
 
 class PKULogoButton(TransparentToolButton):
@@ -16,12 +16,11 @@ class PKULogoButton(TransparentToolButton):
 class NavigationButton(TransparentPushButton):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.connect_url = None
-        current_style = self.styleSheet()
-        additional_styles = """
+        self.uri = None
+        qss = """
         NavigationButton {
             padding: 0px !important;
             text-align: left;
         }
         """
-        self.setStyleSheet(current_style + ' ' + additional_styles)
+        setCustomStyleSheet(self, qss, qss)

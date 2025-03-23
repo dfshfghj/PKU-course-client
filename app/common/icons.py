@@ -1,6 +1,6 @@
 from enum import Enum
 from qfluentwidgets import getIconColor, Theme, FluentIconBase
-
+from .. import resources_rc
 
 class LocalIcon(FluentIconBase, Enum):
     """Local icons"""
@@ -9,4 +9,4 @@ class LocalIcon(FluentIconBase, Enum):
     PKU = 'PKU'
 
     def path(self, theme=Theme.AUTO):
-        return f'app/images/icons/{self.value}_{getIconColor(theme)}.svg'
+        return f':/images/icons/{self.value}_{getIconColor(theme)}.svg'
