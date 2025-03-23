@@ -1,0 +1,6 @@
+requests
+PyQt6
+PyQt6-Fluent-Widgets
+beautifulsoup4
+html2text
+urllib3
