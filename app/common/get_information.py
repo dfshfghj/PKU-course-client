@@ -182,6 +182,22 @@ def getTable(html):
                     {'class': 'table-data-cell-value'})).replace('\n', ''), trow.find_all('td'))))
     return data
 
+def getTables(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    datas = []
+    tables = soup.find('div', {'class': 'container clearfix'}).find_all('table')
+    for table in tables:
+        data = []
+        thead = table.find('thead')
+        heads = thead.find('tr').find_all('th')
+        data.append([head.text for head in heads])
+        trows = table.find('tbody').find_all('tr')
+        for trow in trows:
+            data.append([trow.find('th').text] + list(map(lambda x: str(x.find('span',
+                        {'class': 'table-data-cell-value'})).replace('\n', ''), trow.find_all('td'))))
+        datas.append(data)
+    return datas
+
 def getGradeTable(html):
     soup = BeautifulSoup(html, 'html.parser')
     data = []

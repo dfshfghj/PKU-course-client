@@ -17,6 +17,7 @@ class Web(enum.Enum):
     UPLOAD_ASSIGNMENT = "https://course.pku.edu.cn/webapps/assignment/uploadAssignment"
     VIDEO_LIST = "https://course.pku.edu.cn/webapps/bb-streammedia-hqy-BBLEARN/videoList.action"
     VIDEO_SUB_INFO = "https://yjapise.pku.edu.cn/courseapi/v2/schedule/get-sub-info-by-auth-data"
+    COURSE_TEACHING_STAFF = "https://course.pku.edu.cn/webapps/bb-teachingBook-BBLEARN/course/getTeachingStaffList.do"
 
 
 class Client:
@@ -125,6 +126,14 @@ class Client:
         response.raise_for_status()
         return response.json()
 
+    def blackboard_course_teaching_staff(self, course_id):
+        response = self.session.get(Web.COURSE_TEACHING_STAFF.value, params={
+            'course_id': course_id,
+            'mode': 'view'
+        })
+        response.raise_for_status()
+        return response.text
+    
     def get_by_uri(self, uri, stream=False, timeout=30):
         if not uri.startswith(('http://', 'https://')):
             url = urljoin('https://course.pku.edu.cn', uri)

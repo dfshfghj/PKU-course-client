@@ -1,12 +1,14 @@
 # PKU-Course-Client
 
-PKU-Course-Client（北大教学网客户端）旨在美化并扩展北京大学教学网https://course.pku.edu.cn，支持数据下载至本地以离线查看。
+PKU-Course-Client（北大教学网客户端）旨在美化并扩展北京大学教学网(https://course.pku.edu.cn)，支持数据下载至本地以离线查看。
 
 ## 功能
 
 目前支持的主要页面：
 
 + 课程通知
+
++ 课程教参
 
 + 课堂实录
 
@@ -20,6 +22,8 @@ PKU-Course-Client（北大教学网客户端）旨在美化并扩展北京大学
 
   ![course_announcement](https://raw.githubusercontent.com/dfshfghj/PKU-course-client/refs/heads/master/img/course_announcement.png)
 
+  ![course_teaching_staff](https://raw.githubusercontent.com/dfshfghj/PKU-course-client/refs/heads/master/img/course_teaching_staff.png)
+
   ![course_content](https://raw.githubusercontent.com/dfshfghj/PKU-course-client/refs/heads/master/img/course_content.png)
 
   ![course_video_list](https://raw.githubusercontent.com/dfshfghj/PKU-course-client/refs/heads/master/img/course_video_list.png)
@@ -27,7 +31,7 @@ PKU-Course-Client（北大教学网客户端）旨在美化并扩展北京大学
   ![course_assignment](https://raw.githubusercontent.com/dfshfghj/PKU-course-client/refs/heads/master/img/course_assignment.png)
 
   ![course_grade](https://raw.githubusercontent.com/dfshfghj/PKU-course-client/refs/heads/master/img/course_grade.png)
-
+  
   
 
 ## 友情链接
