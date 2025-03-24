@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QListWidgetItem
 from .Ui_PortalInterface import Ui_PortalInterface
 from .course_interface import CourseInterface
 from PyQt6.QtGui import QFont
+from PyQt6.QtCore import QThread, pyqtSignal
 
 from qfluentwidgets import FluentIcon
 
@@ -26,8 +27,8 @@ class PortalInterface(Ui_PortalInterface, QWidget):
 
         self.load_data()
 
-        self.display_data()
-        
+        # self.display_data()
+
     def init_ui(self):
         font = QFont()
         font.setBold(True)
@@ -39,55 +40,16 @@ class PortalInterface(Ui_PortalInterface, QWidget):
         self.toolButton.setIconSize(QtCore.QSize(107, 30))
         self.alarm_toolButton.setIcon(FluentIcon.RINGER)
 
-        self.currentListWidget.itemClicked.connect(
-            lambda: self.on_listitem_clicked(self.currentListWidget, self.current_courses)
-        )
-        self.historyListWidget.itemClicked.connect(
-            lambda: self.on_listitem_clicked(self.historyListWidget, self.history_courses)
-        )
-
     def load_data(self):
-        with open('data/portal.json', 'r', encoding='utf-8') as file:
-            prev_home_page = json.load(file)
+        print('loading data')
+        self.loadDataThread = LoadDataThread(self.client, self)
+        self.loadDataThread.data_loaded.connect(self.on_data_loaded)
+        self.loadDataThread.start()
 
-        if not 'time' in prev_home_page or self.current_time - datetime.strptime(prev_home_page['time'], "%Y-%m-%d %H:%M:%S") >= timedelta(days=30):
-            try:
-                home_page = self.client.blackboard_homepage()
-                (
-                    self.current_courses,
-                    self.history_courses,
-                    self.announcement,
-                    self.organization,
-                    self.task,
-                ) = getPortal(home_page)
-
-                for course in self.current_courses:
-                    course['name'] = simplifyCourseName(course['name'])
-                for course in self.history_courses:
-                    course['name'] = simplifyCourseName(course['name'])
-
-                self.update_portal_json(
-                    self.current_time, self.current_courses, self.history_courses, self.announcement, self.organization, self.task
-                )
-            except Exception:
-                if 'time' in prev_home_page:
-                    self.current_courses = prev_home_page['current_courses']
-                    self.history_courses = prev_home_page['history_courses']
-                    self.announcement = prev_home_page['announcement']
-                    self.organization = prev_home_page['organization']
-                    self.task = prev_home_page['task']
-                else:
-                    self.current_courses = []
-                    self.history_courses = []
-                    self.announcement = '无公告'
-                    self.organization = '您当前未参加任何组织。'
-                    self.task = '我的任务：\n没有到期任务。'
-        else:
-            self.current_courses = prev_home_page['current_courses']
-            self.history_courses = prev_home_page['history_courses']
-            self.announcement = prev_home_page['announcement']
-            self.organization = prev_home_page['organization']
-            self.task = prev_home_page['task']
+    def on_data_loaded(self, content):
+        print('data_loaded')
+        self.current_courses, self.history_courses, self.announcement, self.organization, self.task = content
+        self.display_data()
 
     def display_data(self):
         font = QFont()
@@ -102,19 +64,89 @@ class PortalInterface(Ui_PortalInterface, QWidget):
             item = QListWidgetItem(course['name'])
             item.setFont(font)
             self.historyListWidget.addItem(item)
-
+        self.currentListWidget.itemClicked.connect(
+            lambda: self.on_listitem_clicked(
+                self.currentListWidget, self.current_courses)
+        )
+        self.historyListWidget.itemClicked.connect(
+            lambda: self.on_listitem_clicked(
+                self.historyListWidget, self.history_courses)
+        )
         self.announcementContent.setText(self.announcement)
         self.organizationContent.setText(self.organization)
-        self.taskContent.setText(self.task)      
+        self.taskContent.setText(self.task)
 
     def on_listitem_clicked(self, listWidget, data):
         index = listWidget.selectedIndexes()[0].row()
         key = data[index]['key']
-        #print(key)
+        # print(key)
         if not key in self.visited:
             self.visited[key] = CourseInterface(key, self.client, self)
         self.parentWidget().addWidget(self.visited[key])
-        self.parentWidget().setCurrentWidget(self.visited[key])
+        self.parentWidget().setCurrentWidget(self.visited[key], duration=1000)
+
+
+class LoadDataThread(QThread):
+    data_loaded = pyqtSignal(tuple)
+
+    def __init__(self, client, parent=None):
+        super().__init__(parent)
+        self.client = client
+        self.current_time = datetime.now()
+
+    def run(self):
+        try:
+            with open('data/portal.json', 'r', encoding='utf-8') as file:
+                prev_home_page = json.load(file)
+
+            if not 'time' in prev_home_page or self.current_time - datetime.strptime(prev_home_page['time'], "%Y-%m-%d %H:%M:%S") >= timedelta(days=30):
+                try:
+                    home_page = self.client.blackboard_homepage()
+                    (
+                        self.current_courses,
+                        self.history_courses,
+                        self.announcement,
+                        self.organization,
+                        self.task,
+                    ) = getPortal(home_page)
+
+                    for course in self.current_courses:
+                        course['name'] = simplifyCourseName(course['name'])
+                    for course in self.history_courses:
+                        course['name'] = simplifyCourseName(course['name'])
+
+                    self.update_portal_json(
+                        self.current_time, self.current_courses, self.history_courses, self.announcement, self.organization, self.task
+                    )
+                except Exception:
+                    if 'time' in prev_home_page:
+                        self.current_courses = prev_home_page['current_courses']
+                        self.history_courses = prev_home_page['history_courses']
+                        self.announcement = prev_home_page['announcement']
+                        self.organization = prev_home_page['organization']
+                        self.task = prev_home_page['task']
+                    else:
+                        self.current_courses = []
+                        self.history_courses = []
+                        self.announcement = '无公告'
+                        self.organization = '您当前未参加任何组织。'
+                        self.task = '我的任务：\n没有到期任务。'
+            else:
+                self.current_courses = prev_home_page['current_courses']
+                self.history_courses = prev_home_page['history_courses']
+                self.announcement = prev_home_page['announcement']
+                self.organization = prev_home_page['organization']
+                self.task = prev_home_page['task']
+
+        except Exception as e:
+            self.current_courses = []
+            self.history_courses = []
+            self.announcement = '无公告'
+            self.organization = '您当前未参加任何组织。'
+            self.task = '我的任务：\n没有到期任务。'
+            print(e)
+        self.data_loaded.emit((self.current_courses, self.history_courses,
+                              self.announcement, self.organization, self.task))
 
     def update_portal_json(self, time, current_courses, history_courses, announcement, organization, task):
         with open('data/portal.json', 'w', encoding='utf-8') as file:
@@ -125,4 +157,4 @@ class PortalInterface(Ui_PortalInterface, QWidget):
                 'announcement': announcement,
                 'organization': organization,
                 'task': task
-                }, file)
+            }, file)

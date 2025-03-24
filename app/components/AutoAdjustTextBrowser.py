@@ -16,7 +16,7 @@ class AutoAdjustTextBrowser(TextBrowser):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
         self.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.manager = QNetworkAccessManager()
-        #self.manager.finished.connect(self.on_resource_loaded)
+        self.web_connection = True
 
     
     def sizeHint(self):
@@ -33,26 +33,28 @@ class AutoAdjustTextBrowser(TextBrowser):
         self.setFixedHeight(self.sizeHint().height())
 
     def loadResource(self, type, name):
-        if type == QTextDocument.ResourceType.ImageResource.value:
-            print(f'load image: {name.toString()}')
-            url = name.toString()
-            try:
-                response = self.session.get(url, stream=True)
-                response.raise_for_status()
-                image_data = response.content
+        if self.web_connection:
+            if type == QTextDocument.ResourceType.ImageResource.value:
+                print(f'load image: {name.toString()}')
+                url = name.toString()
+                try:
+                    response = self.session.get(url, stream=True)
+                    response.raise_for_status()
+                    image_data = response.content
 
-                pixmap = QPixmap()
-                pixmap.loadFromData(QByteArray(image_data))
+                    pixmap = QPixmap()
+                    pixmap.loadFromData(QByteArray(image_data))
 
-                self.document().addResource(
-                    QTextDocument.ResourceType.ImageResource,
-                    QUrl(url),
-                    pixmap
-                )
-                return pixmap
-            except requests.RequestException as e :
-                print(f'fail: {e}')
-                return None
+                    self.document().addResource(
+                        QTextDocument.ResourceType.ImageResource,
+                        QUrl(url),
+                        pixmap
+                    )
+                    return pixmap
+                except requests.RequestException as e :
+                    print(f'fail: {e}')
+                    self.web_connection = False
+                    return None
 
         return super().loadResource(type, name)
     

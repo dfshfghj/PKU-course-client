@@ -130,12 +130,12 @@ class CourseInterface(Ui_CourseInterface, QWidget):
                 pageWidget = self.pageName[name](self.course_name, uri2id(uri), self.client, parent=self)
                 self.page[uri] = pageWidget
                 self.stackedWidget.addWidget(pageWidget)
-                self.stackedWidget.setCurrentWidget(pageWidget)
+                self.stackedWidget.setCurrentWidget(pageWidget, duration=350)
 
     def back_to_portal(self):
         portalInterface = self.parent().parent().parent().portalInterface
         #self.parent().setCurrentIndex(0)
-        self.parent().setCurrentWidget(portalInterface)
+        self.parent().setCurrentWidget(portalInterface, duration=1000)
 
     def update_course_menu_json(self):
         with open('data/courseInfo.json', 'r+', encoding='utf-8') as file:
