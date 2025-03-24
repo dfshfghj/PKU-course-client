@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget
 from PyQt6.QtCore import Qt, QPropertyAnimation, QRect, pyqtSlot
 from PyQt6.QtGui import QPixmap, QImage, QPainter, QIcon, QFont
 
-from qfluentwidgets import SubtitleLabel, FluentLabelBase, getFont
+from qfluentwidgets import CaptionLabel, FluentLabelBase, getFont, setCustomStyleSheet
 
 class CourseMenuLabel(FluentLabelBase):
     def __init__(self, *args, **kwargs):
@@ -33,4 +33,21 @@ class CourseMenuLabel(FluentLabelBase):
         self.animation.start()
         self.collapsed = not self.collapsed
     
-
+class InfoLabel(CaptionLabel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        info_light_qss = """
+        CaptionLabel {
+        background-color: #06000000;
+        border-radius: 10px;
+        border: 1px solid #DDDDDD;
+        padding: 1px 10px
+        }"""
+        info_dark_qss = """
+        CaptionLabel {
+        background-color: #11FFFFFF;
+        border-radius: 10px;
+        border: 1px solid #333333;
+        padding: 1px 10px
+        }"""
+        setCustomStyleSheet(self, info_light_qss, info_dark_qss)

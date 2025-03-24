@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QColor
 from qfluentwidgets import CardWidget, BodyLabel, IconWidget, SubtitleLabel, TextBrowser, FluentIcon, CaptionLabel, HorizontalSeparator, SimpleCardWidget, isDarkTheme
 from ..components.AutoAdjustTextBrowser import AutoAdjustTextBrowser
+from ..components.label import InfoLabel
 
 class AnnouncementCard(CardWidget):
     def __init__(self, session, parent):
@@ -14,10 +15,10 @@ class AnnouncementCard(CardWidget):
         self.verticalLayout.addWidget(self.announcementTitleLabel)
         self.announcementInfo = QtWidgets.QHBoxLayout()
         self.announcementInfo.setObjectName("announcementInfo")
-        self.info_1 = BodyLabel("testInfo1", self)
+        self.info_1 = InfoLabel("testInfo1", self)
         self.info_1.setObjectName("info_1")
         self.announcementInfo.addWidget(self.info_1)
-        self.info_2 = BodyLabel("testInfo2", self)
+        self.info_2 = InfoLabel("testInfo2", self)
         self.info_2.setObjectName("info_2")
         self.announcementInfo.addWidget(self.info_2)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)

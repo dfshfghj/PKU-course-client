@@ -1,8 +1,4 @@
-from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap, QImage, QPainter, QIcon
-
+from PyQt6 import QtCore
 from qfluentwidgets import TransparentPushButton, TransparentToolButton, setCustomStyleSheet
 from ..common.icons import LocalIcon
 
