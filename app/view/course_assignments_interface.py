@@ -46,6 +46,9 @@ class CourseAssignmentsInterface(Ui_CourseAnnouncementInterface, QWidget):
         self.display_data()
 
     def display_data(self):
+        self.container.removeWidget(self.loadingLabel)
+        self.loadingLabel.hide()
+        self.loadingLabel.deleteLater()
         self.assignmentsCards = []
         for assignment in self.content:
             icon = self.img_icon.get(assignment['image'], FluentIcon.DOCUMENT)

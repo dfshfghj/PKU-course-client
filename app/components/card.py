@@ -2,11 +2,10 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QColor
 from qfluentwidgets import CardWidget, BodyLabel, IconWidget, SubtitleLabel, TextBrowser, FluentIcon, CaptionLabel, HorizontalSeparator, SimpleCardWidget, isDarkTheme
-from ..components.AutoAdjustTextBrowser import AutoAdjustTextBrowser
 from ..components.label import InfoLabel
 
 class AnnouncementCard(CardWidget):
-    def __init__(self, session, parent):
+    def __init__(self, parent):
         super().__init__(parent=parent)
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -36,12 +35,15 @@ class AnnouncementCard(CardWidget):
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.announcementDetails.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.announcementDetails)
-        self.textBrowser = AutoAdjustTextBrowser(session, parent=self)
-        self.textBrowser.setObjectName("textBrowser")
-        self.verticalLayout.addWidget(self.textBrowser)
+        #self.textBrowser = AutoAdjustTextBrowser(parent=self)
+        #self.textBrowser.setObjectName("textBrowser")
+        self.bodyLabel = BodyLabel(self)
+        self.bodyLabel.setObjectName("bodyLabel")
+        self.bodyLabel.setWordWrap(True)
+        self.verticalLayout.addWidget(self.bodyLabel)
 
     def addHtml(self, html):
-        self.textBrowser.insertHtml(html)
+        self.bodyLabel.setText(html)
 
 class DocumentCard(CardWidget):
     def __init__(self, icon, detail: bool, parent):
@@ -68,13 +70,6 @@ class DocumentCard(CardWidget):
         self.verticalLayout.setContentsMargins(20, 20, 20, 20)
         self.verticalLayout.addLayout(self.horizontalLayout)
         if detail:
-            '''
-            self.line = QtWidgets.QFrame(self)
-            self.line.setObjectName("line")
-            self.line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-            self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-            self.verticalLayout.addWidget(self.line)
-            '''
             self.horizontalSeparator = HorizontalSeparator(self)
             self.horizontalSeparator.setObjectName('horizontalSeparator')
             self.verticalLayout.addWidget(self.horizontalSeparator)
@@ -90,7 +85,8 @@ class LoginPanelCard(SimpleCardWidget):
         super().__init__(parent)
 
     def _normalBackgroundColor(self):
-        return QColor(127, 127, 127, 170 if isDarkTheme else 255) 
+        if isDarkTheme:
+            return QColor(255, 255, 255, 50)
+        else:
+            return QColor(255, 255, 255 ,170) 
             
-
-

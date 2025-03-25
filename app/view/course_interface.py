@@ -46,21 +46,22 @@ class CourseInterface(Ui_CourseInterface, QWidget):
 
     def load_course_menu(self):
         with open('data/courseInfo.json', 'r', encoding='utf-8') as file:
-            self.course_menu = json.load(file)
+            prev_course_menu = json.load(file)
 
-        if self.key not in self.course_menu:
+        if self.key not in prev_course_menu:
             try:
                 html = self.client.blackboard_coursepage(self.key)
-                self.course_menu[self.key] = getCourseMenu(html)
+                self.course_menu = getCourseMenu(html)
                 self.update_course_menu_json()
-            except Exception:
+            except Exception as e:
+                print(e)
                 self.course_menu = {
                     'name': 'unknown',
                     'buttons': {},
                     'groups': ['default group']
                 }
         else:
-            self.course_menu = self.course_menu[self.key]['menu']
+            self.course_menu = prev_course_menu[self.key]
 
         self.course_name = self.course_menu['name']
         self.nav_buttons = self.course_menu['buttons']
@@ -140,9 +141,7 @@ class CourseInterface(Ui_CourseInterface, QWidget):
     def update_course_menu_json(self):
         with open('data/courseInfo.json', 'r+', encoding='utf-8') as file:
             data = json.load(file)
-            data[self.key] = {
-                        'menu': self.course_menu
-                        }
+            data[self.key] = self.course_menu
             file.seek(0)
             json.dump(data, file)
             file.truncate()

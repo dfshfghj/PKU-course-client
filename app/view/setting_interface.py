@@ -28,14 +28,6 @@ class SettingInterface(ScrollArea):
         # personalization
         self.personalGroup = SettingCardGroup(
             self.tr('Personalization'), self.scrollWidget)
-        self.enableAcrylicCard = SwitchSettingCard(
-            FIF.TRANSPARENT,
-            self.tr("Use Acrylic effect"),
-            self.tr(
-                "Acrylic effect has better visual experience, but it may cause the window to become stuck"),
-            configItem=cfg.enableAcrylicBackground,
-            parent=self.personalGroup
-        )
         self.themeCard = OptionsSettingCard(
             cfg.themeMode,
             FIF.BRUSH,
@@ -94,7 +86,6 @@ class SettingInterface(ScrollArea):
     def __initLayout(self):
         self.settingLabel.move(60, 63)
 
-        self.personalGroup.addSettingCard(self.enableAcrylicCard)
         self.personalGroup.addSettingCard(self.themeCard)
         self.personalGroup.addSettingCard(self.themeColorCard)
         self.personalGroup.addSettingCard(self.zoomCard)
@@ -137,6 +128,4 @@ class SettingInterface(ScrollArea):
         cfg.themeChanged.connect(self.__onThemeChanged)
 
         # personalization
-        self.enableAcrylicCard.checkedChanged.connect(
-            self.acrylicEnableChanged)
         self.themeColorCard.colorChanged.connect(setThemeColor)

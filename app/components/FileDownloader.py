@@ -1,6 +1,7 @@
 from PyQt6.QtCore import QThread, pyqtSignal
 from ..common.course_requests import Client
 import os
+import urllib.parse
 
 
 class FileDownloader(QThread):
@@ -18,7 +19,7 @@ class FileDownloader(QThread):
             response = self.client.get_by_uri(self.link, stream=True)
             response.raise_for_status()
             if self.file_name is None:
-                file_name = response.url.split("/")[-1]
+                file_name = urllib.parse.unquote(response.url.split("/")[-1])
             else:
                 file_name = self.file_name
             total_size = int(response.headers.get('content-length', 0))

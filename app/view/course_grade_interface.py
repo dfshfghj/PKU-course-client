@@ -40,6 +40,9 @@ class CourseGradeInterface(Ui_CourseAnnouncementInterface, QWidget):
         self.display_data()
 
     def display_data(self):
+        self.container.removeWidget(self.loadingLabel)
+        self.loadingLabel.hide()
+        self.loadingLabel.deleteLater()
         self.table = AutoAdjustTableWidget(self)
         self.table.setRowCount(len(self.content) - 1)
         self.table.setColumnCount(len(self.content[0]) - 1)
@@ -55,11 +58,14 @@ class CourseGradeInterface(Ui_CourseAnnouncementInterface, QWidget):
         self.table.setSizePolicy(
             QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         self.table.verticalHeader().setDefaultSectionSize(100)
+        self.table.verticalHeader().setSectionResizeMode(
+                QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.table.verticalHeader().hide()
         qss = "BodyLabel {margin: 15px}"
         for row in range(0, len(self.content) - 1):
             for col in range(len(self.content[0]) - 1):
                 label = BodyLabel(self.content[row+1][col])
+                label.setMinimumHeight(100)
                 setCustomStyleSheet(label, qss, qss)
                 label.setTextFormat(Qt.TextFormat.AutoText)
                 label.setTextInteractionFlags(

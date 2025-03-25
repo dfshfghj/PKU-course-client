@@ -32,8 +32,6 @@ class LanguageSerializer(ConfigSerializer):
 class Config(QConfig):
     """ Config of application """
     # main window
-    enableAcrylicBackground = ConfigItem(
-        "MainWindow", "EnableAcrylicBackground", False, BoolValidator())
     minimizeToTray = ConfigItem(
         "MainWindow", "MinimizeToTray", True, BoolValidator())
     playBarColor = ColorConfigItem("MainWindow", "PlayBarColor", "#225C7F")

@@ -1,6 +1,8 @@
 from .course_requests import Client
 from bs4 import BeautifulSoup
 import re
+import os
+import hashlib
 from urllib.parse import urlparse, parse_qs
 
 
@@ -21,6 +23,9 @@ def getPortal(html):
     history_courses = []
     for portlet in portlets:
         title = portlet.find('span', {'class': 'moduleTitle'}).get_text()
+        controlWrappers = portlet.find_all('div', {'class': 'moduleControlWrapper u_reverseAlign'})
+        for controlWrapper in controlWrappers:
+            controlWrapper['style'] = "text-align: right;"
         if '当前学期课程' in title:
             for li in portlet.find_all('li'):
                 a_tag = li.find('a')
@@ -45,6 +50,7 @@ def getPortal(html):
                             {'name': course_name, 'key': key})
         elif '我的公告' in title:
             announcement = portlet.find('div', {'class': 'collapsible'})
+            announcement['style'] = "line-height: 2;"
             for h3 in announcement.find_all('h3'):
                 h4 = soup.new_tag('h4')
                 h4.string = h3.get_text()
@@ -54,18 +60,20 @@ def getPortal(html):
             #     a['style'] = "color: none;"
         elif '我的组织' in title:
             organization = portlet.find('div', {'class': 'collapsible'})
+            organization['style'] = "line-height: 2;"
             for h3 in organization.find_all('h3'):
-                h4 = soup.new_tag('h4')
-                h4.string = h3.get_text()
-                h3.replace_with(h4)
+                div = soup.new_tag('div')
+                div.string = h3.get_text()
+                h3.replace_with(div)
             # for a in organization.find_all('a'):
             #     a['style'] = "color: none;"
         elif '我的任务' in title:
             task = portlet.find('div', {'class': 'collapsible'})
+            task['style'] = "line-height: 2;"
             for h3 in task.find_all('h3'):
-                h4 = soup.new_tag('h4')
-                h4.string = h3.get_text()
-                h3.replace_with(h4)
+                div = soup.new_tag('div')
+                div.string = h3.get_text()
+                h3.replace_with(div)
             # for a in task.find_all('a'):
             #     a['style'] = "color: none;"
     return current_courses, history_courses, str(announcement), str(organization), str(task)
@@ -75,31 +83,45 @@ def simplifyCourseName(course_name):
     return re.sub(r'^.*?: ', '', course_name).strip()
 
 
-def getCourseAnnouncement(html):
+def getCourseAnnouncement(html, client=None):
     soup = BeautifulSoup(html, 'html.parser')
     announcement_list = soup.find('ul', {'id': 'announcementList'})
     get_announcements = []
     if announcement_list:
-        announcements = announcement_list.find_all('li')
+        announcements = announcement_list.find_all('li', {'class': 'clearfix'})
     else:
         return get_announcements
     for announcement in announcements:
         title = announcement.find('h3').get_text(strip=True)
-        time_tag = announcement.find('p', text=lambda t: t and "发布时间:" in t)
-        post_time = time_tag.get_text(strip=True).replace("发布时间:", "")
-
+        time_tag = announcement.find('div', {'class': 'details'}).find('p')
+        post_time = time_tag.get_text(strip=True).split(':')[-1].strip()
+        imgs = announcement.find_all('img')
+        for img in imgs:
+            src = img['src']
+            if client:
+                print('get image')
+                response = client.get_by_uri(src, stream=True)
+                response.raise_for_status()
+                if response.status_code == 200:
+                    image_format = response.url.split(".")[-1]
+                    print(repr(response.url), hashlib.md5(response.url.encode()).hexdigest())
+                    with open(os.path.join('data', 'cache', f'{hashlib.md5(response.url.encode()).hexdigest()}.{image_format}'), mode='wb') as temp_file:
+                        temp_file.write(response.content)
+                        temp_file_path = os.path.abspath(temp_file.name)
+                    img['src'] = f"file:///{temp_file_path}"
+                else:
+                    print('failed loading image')
+            img['style'] = "max-width: 100%;"
         content_div = announcement.find('div', class_='vtbegenerated')
         content = str(content_div) if content_div else ''
 
         announcement_info_div = announcement.find(
             'div', class_='announcementInfo')
-        for p in announcement_info_div.find_all('p'):
-            if "发帖者:" in p.text:
-                poster = p.text.replace("发帖者:", "").strip()
-            elif "发布至:" in p.text:
-                posted_to = p.text.replace("发布至:", "").strip()
+        poster, posted_to = list(map(lambda p: p.text.split(":")[-1].strip(), announcement_info_div.find_all('p')))
         get_announcements.append({'title': title, 'time': post_time,
                                  'poster': poster, 'post_to': posted_to, 'content': content})
+        
+        
     return get_announcements
 
 
@@ -146,12 +168,6 @@ def getCourseDocuments(html):
                     name = span.get_text(strip=True)
                     break
         details = content.find('div', {'class': 'details'})
-        # appendixes = details.find_all('a')
-        # appendix = {}
-        # for append in appendixes:
-        #     append_name = append.get_text(strip=True)
-        #     append_url = append['href']
-        #     appendix[append_url] = append_name
         if details and details.get_text(strip=True):
             for element in details.find_all(True):
                 if not ''.join(element.stripped_strings):
@@ -211,15 +227,15 @@ def getGradeTable(html):
     grade_cells = table.find_all('div', {'class': 'cell grade'})
     for grade_cell in grade_cells:
         grade_cell['style'] = "text-align: right;"
-    assignment_names = table.find_all('a')
-    for assignment_name in assignment_names:
-        assignment_name['style'] = "font-size: 18px; font-weight: bold; color: #3491fa;"
-    '''
-    statistics = [element.parent for element in table.select("div > input")]
-    for stat in statistics:
-        stat_title = stat.find('span')
-        stat_title['style'] = "font-size: 20px; font-weight: bold; color: #3491fa;"
-    '''
+    assignment_cells = table.find_all('div', {'class': 'cell gradable'})
+    for assignment_cell in assignment_cells:
+        assignment_name = assignment_cell.find('a')
+        if assignment_name:
+            assignment_name['style'] = "font-size: 16px; font-weight: bold; color: #3491fa;"
+        else:
+            assignment_name = assignment_cell.find('span')
+            if assignment_name:
+                assignment_name['style'] = "font-size: 16px; font-weight: bold;"
     total_points = table.find_all('span', {'class': 'pointsPossible clearfloats'})
     for total_point in total_points:
         div = soup.new_tag('div')

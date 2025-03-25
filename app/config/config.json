@@ -1,13 +1,12 @@
 {
     "MainWindow": {
         "DpiScale": "Auto",
-        "EnableAcrylicBackground": true,
-        "Language": "zh_CN",
+        "Language": "Auto",
         "MinimizeToTray": true,
         "PlayBarColor": "#ff225c7f"
     },
     "QFluentWidgets": {
         "ThemeColor": "#ff94070c",
-        "ThemeMode": "Auto"
+        "ThemeMode": "Dark"
     }
 }

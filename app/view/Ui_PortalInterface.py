@@ -231,7 +231,7 @@ class Ui_PortalInterface(object):
         self.announcementTitle = SubtitleLabel(parent=self.announcement)
         self.announcementTitle.setObjectName("announcementTitle")
         self.verticalLayout_9.addWidget(self.announcementTitle)
-        self.announcementContent = BodyLabel(parent=self.announcement)
+        self.announcementContent = CaptionLabel(parent=self.announcement)
         self.announcementContent.setObjectName("announcementContent")
         self.verticalLayout_9.addWidget(self.announcementContent)
         self.column2.addWidget(self.announcement)
@@ -242,7 +242,7 @@ class Ui_PortalInterface(object):
         self.organizationTitle = SubtitleLabel(parent=self.organization)
         self.organizationTitle.setObjectName("organizationTitle")
         self.verticalLayout_10.addWidget(self.organizationTitle)
-        self.organizationContent = BodyLabel(parent=self.organization)
+        self.organizationContent = CaptionLabel(parent=self.organization)
         self.organizationContent.setObjectName("organizationContent")
         self.verticalLayout_10.addWidget(self.organizationContent)
         self.column2.addWidget(self.organization)
@@ -253,7 +253,7 @@ class Ui_PortalInterface(object):
         self.taskTitle = SubtitleLabel(parent=self.task)
         self.taskTitle.setObjectName("taskTitle")
         self.verticalLayout_11.addWidget(self.taskTitle)
-        self.taskContent = BodyLabel(parent=self.task)
+        self.taskContent = CaptionLabel(parent=self.task)
         self.taskContent.setObjectName("taskContent")
         self.verticalLayout_11.addWidget(self.taskContent)
         self.column2.addWidget(self.task)
@@ -336,4 +336,4 @@ class Ui_PortalInterface(object):
         self.taskContent.setText(_translate("PortalInterface", "我的任务：\n"
 "没有到期任务。"))
 from ..components.button import NavigationButton
-from qfluentwidgets import BodyLabel, CaptionLabel, CardWidget, ListWidget, SmoothScrollArea, SubtitleLabel, TransparentPushButton, TransparentToolButton
+from qfluentwidgets import CaptionLabel, CardWidget, ListWidget, SmoothScrollArea, SubtitleLabel, TransparentPushButton, TransparentToolButton

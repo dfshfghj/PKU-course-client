@@ -5,6 +5,7 @@ from .Ui_CourseAnnouncementInterface import Ui_CourseAnnouncementInterface
 from qfluentwidgets import TableWidget, BodyLabel, Pivot
 from ..common.course_requests import Client
 from ..common.get_information import getTables
+from ..components.AutoAdjustTableWidget import AutoAdjustTableWidget
 import json
 from datetime import datetime, timedelta
 
@@ -47,11 +48,14 @@ class CourseTeachingStaffListInterface(Ui_CourseAnnouncementInterface, QWidget):
         self.display_data()
 
     def display_data(self):
+        self.container.removeWidget(self.loadingLabel)
+        self.loadingLabel.hide()
+        self.loadingLabel.deleteLater()
         name = ['指定教参列表', '可选教参列表']
         print(self.content)
         for i in range(len(self.content)):
             table = self.content[i]
-            tablewidget = TableWidget(self)
+            tablewidget = AutoAdjustTableWidget(self)
             tablewidget.setRowCount(len(table) - 1)
             tablewidget.setColumnCount(len(table[0]))
             tablewidget.setBorderVisible(True)

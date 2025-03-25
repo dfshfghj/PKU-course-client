@@ -99,7 +99,7 @@ class LoadDataThread(QThread):
             with open('data/portal.json', 'r', encoding='utf-8') as file:
                 prev_home_page = json.load(file)
 
-            if not 'time' in prev_home_page or self.current_time - datetime.strptime(prev_home_page['time'], "%Y-%m-%d %H:%M:%S") >= timedelta(days=30):
+            if not 'time' in prev_home_page or self.current_time - datetime.strptime(prev_home_page['time'], "%Y-%m-%d %H:%M:%S") >= timedelta(seconds=1):
                 try:
                     home_page = self.client.blackboard_homepage()
                     (
@@ -118,7 +118,8 @@ class LoadDataThread(QThread):
                     self.update_portal_json(
                         self.current_time, self.current_courses, self.history_courses, self.announcement, self.organization, self.task
                     )
-                except Exception:
+                except Exception as e:
+                    print(e)
                     if 'time' in prev_home_page:
                         self.current_courses = prev_home_page['current_courses']
                         self.history_courses = prev_home_page['history_courses']

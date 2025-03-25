@@ -46,6 +46,9 @@ class CourseContentInterface(Ui_CourseAnnouncementInterface, QWidget):
         self.display_data()
 
     def display_data(self):
+        self.container.removeWidget(self.loadingLabel)
+        self.loadingLabel.hide()
+        self.loadingLabel.deleteLater()
         self.documentCards = []
         self.pageTitleHeader.setText(self.page_title)
         for content in self.content:
